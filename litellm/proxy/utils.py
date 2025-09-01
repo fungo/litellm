@@ -3694,6 +3694,10 @@ async def count_tokens_with_anthropic_api(
     model_to_use: str,
     messages: Optional[List[Dict[str, Any]]],
     deployment: Optional[Dict[str, Any]] = None,
+    system: Optional[Union[str, List[Dict[str, Any]]]] = None,
+    tools: Optional[List[Dict[str, Any]]] = None,
+    tool_choice: Optional[Union[str, Dict[str, Any]]] = None,
+    metadata: Optional[Dict[str, Any]] = None,
 ) -> Optional[Dict[str, Any]]:
     """
     Helper function to count tokens using Anthropic API directly.
@@ -3702,6 +3706,10 @@ async def count_tokens_with_anthropic_api(
         model_to_use: The model name to use for token counting
         messages: The messages to count tokens for
         deployment: Optional deployment configuration containing API key
+        system: Optional system prompt (string or list of message objects)
+        tools: Optional tool definitions for function calling
+        tool_choice: Optional tool choice strategy
+        metadata: Optional additional metadata parameters
 
     Returns:
         Optional dict with token count and tokenizer info, or None if failed
@@ -3727,13 +3735,28 @@ async def count_tokens_with_anthropic_api(
             # Call Anthropic API directly for more accurate token counting
             client = anthropic.Anthropic(api_key=anthropic_api_key)
 
+            # Build parameters for count_tokens API call
+            count_params = {
+                "model": model_to_use,
+                "messages": messages,  # type: ignore
+                "betas": ["token-counting-2024-11-01"],
+            }
+            
+            # Add optional parameters if provided
+            if system:
+                count_params["system"] = system
+            if tools:
+                count_params["tools"] = tools
+            if tool_choice:
+                count_params["tool_choice"] = tool_choice
+            # Add any additional metadata parameters that might be supported
+            if metadata:
+                for key, value in metadata.items():
+                    if key not in count_params:  # Avoid overriding core parameters
+                        count_params[key] = value
+
             # Call with explicit parameters to satisfy type checking
-            # Type ignore for now since messages come from generic dict input
-            response = client.beta.messages.count_tokens(
-                model=model_to_use,
-                messages=messages,  # type: ignore
-                betas=["token-counting-2024-11-01"],
-            )
+            response = client.beta.messages.count_tokens(**count_params)
             total_tokens = response.input_tokens
             tokenizer_used = "anthropic_api"
 

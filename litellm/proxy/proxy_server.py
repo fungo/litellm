@@ -5924,6 +5924,10 @@ async def token_counter(request: TokenCountRequest, call_endpoint: bool = False)
                 contents=contents,
                 deployment=deployment,
                 request_model=request.model,
+                system=request.system,
+                tools=request.tools,
+                tool_choice=request.tool_choice,
+                metadata=request.metadata,
             )
             #########################################################
             # Transfrom the Response to the well known format

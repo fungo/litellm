@@ -2131,6 +2131,27 @@ class TokenCountRequest(LiteLLMPydanticObjectBase):
     """
     Anthropic token counting endpoint uses /messages
     """
+    
+    # Additional fields for complete token counting
+    system: Optional[Union[str, List[dict]]] = None
+    """
+    System prompt for the conversation - can be string or list of message objects
+    """
+    
+    tools: Optional[List[dict]] = None
+    """
+    Tool definitions for function calling
+    """
+    
+    tool_choice: Optional[Union[str, dict]] = None
+    """
+    Tool choice strategy (auto, required, specific tool, etc.)
+    """
+    
+    metadata: Optional[dict] = None
+    """
+    Additional metadata or parameters that might affect token count
+    """
 
     contents: Optional[List[dict]] = None
     """

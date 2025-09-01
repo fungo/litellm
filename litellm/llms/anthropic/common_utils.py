@@ -257,6 +257,10 @@ class AnthropicTokenCounter(BaseTokenCounter):
         contents: Optional[List[Dict[str, Any]]],
         deployment: Optional[Dict[str, Any]] = None,
         request_model: str = "",
+        system: Optional[Union[str, List[Dict[str, Any]]]] = None,
+        tools: Optional[List[Dict[str, Any]]] = None,
+        tool_choice: Optional[Union[str, Dict[str, Any]]] = None,
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> Optional[TokenCountResponse]:
         from litellm.proxy.utils import count_tokens_with_anthropic_api
         
@@ -264,6 +268,10 @@ class AnthropicTokenCounter(BaseTokenCounter):
             model_to_use=model_to_use,
             messages=messages,
             deployment=deployment,
+            system=system,
+            tools=tools,
+            tool_choice=tool_choice,
+            metadata=metadata,
         )
         
         if result is not None:
