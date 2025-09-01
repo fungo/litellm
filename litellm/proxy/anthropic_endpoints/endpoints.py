@@ -190,6 +190,17 @@ async def count_tokens(
         model_name = data.get("model")
         messages = data.get("messages", [])
 
+        # Extract additional fields for complete token counting
+        system = data.get("system")
+        tools = data.get("tools")
+        tool_choice = data.get("tool_choice")
+
+        # Extract any other metadata that might affect token count
+        metadata = {}
+        for key in data:
+            if key not in ["model", "messages", "system", "tools", "tool_choice"]:
+                metadata[key] = data[key]
+
         if not model_name:
             raise HTTPException(
                 status_code=400, detail={"error": "model parameter is required"}
@@ -203,7 +214,14 @@ async def count_tokens(
         # Create TokenCountRequest for the internal endpoint
         from litellm.proxy._types import TokenCountRequest
 
-        token_request = TokenCountRequest(model=model_name, messages=messages)
+        token_request = TokenCountRequest(
+            model=model_name,
+            messages=messages,
+            system=system,
+            tools=tools,
+            tool_choice=tool_choice,
+            metadata=metadata if metadata else None,
+        )
 
         # Call the internal token counter function with direct request flag set to False
         token_response = await internal_token_counter(
