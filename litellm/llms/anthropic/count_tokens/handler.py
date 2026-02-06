@@ -31,6 +31,9 @@ class AnthropicCountTokensHandler(AnthropicCountTokensConfig):
         api_key: str,
         api_base: Optional[str] = None,
         timeout: Optional[Union[float, httpx.Timeout]] = None,
+        system: Optional[Union[str, List[Dict[str, Any]]]] = None,
+        tools: Optional[List[Dict[str, Any]]] = None,
+        tool_choice: Optional[Union[str, Dict[str, Any]]] = None,
     ) -> Dict[str, Any]:
         """
         Handle a CountTokens request using httpx.
@@ -41,6 +44,9 @@ class AnthropicCountTokensHandler(AnthropicCountTokensConfig):
             api_key: The Anthropic API key
             api_base: Optional custom API base URL
             timeout: Optional timeout for the request (defaults to litellm.request_timeout)
+            system: Optional system prompt (string or list of message objects)
+            tools: Optional tool definitions for function calling
+            tool_choice: Optional tool choice strategy
 
         Returns:
             Dictionary containing token count response
@@ -60,6 +66,9 @@ class AnthropicCountTokensHandler(AnthropicCountTokensConfig):
             request_body = self.transform_request_to_count_tokens(
                 model=model,
                 messages=messages,
+                system=system,
+                tools=tools,
+                tool_choice=tool_choice,
             )
 
             verbose_logger.debug(f"Transformed request: {request_body}")
