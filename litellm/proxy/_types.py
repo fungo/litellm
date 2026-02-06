@@ -2834,6 +2834,21 @@ class TokenCountRequest(LiteLLMPydanticObjectBase):
     Anthropic token counting endpoint uses /messages
     """
 
+    system: Optional[Union[str, List[dict]]] = None
+    """
+    System prompt for the conversation - can be string or list of message objects
+    """
+
+    tools: Optional[List[dict]] = None
+    """
+    Tool definitions for function calling
+    """
+
+    tool_choice: Optional[Union[str, dict]] = None
+    """
+    Tool choice strategy (auto, required, specific tool, etc.)
+    """
+
     contents: Optional[List[dict]] = None
     """
     Google /countTokens endpoint expects contents to be a list of dicts with the following structure:

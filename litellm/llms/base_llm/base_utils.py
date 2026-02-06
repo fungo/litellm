@@ -24,6 +24,9 @@ class BaseTokenCounter(ABC):
         contents: Optional[List[Dict[str, Any]]],
         deployment: Optional[Dict[str, Any]] = None,
         request_model: str = "",
+        system: Optional[Union[str, List[Dict[str, Any]]]] = None,
+        tools: Optional[List[Dict[str, Any]]] = None,
+        tool_choice: Optional[Union[str, Dict[str, Any]]] = None,
     ) -> Optional[TokenCountResponse]:
         pass
 

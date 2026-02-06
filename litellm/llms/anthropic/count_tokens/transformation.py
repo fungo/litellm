@@ -4,7 +4,7 @@ Anthropic CountTokens API transformation logic.
 This module handles the transformation of requests to Anthropic's CountTokens API format.
 """
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Union
 
 from litellm.constants import ANTHROPIC_TOKEN_COUNTING_BETA_VERSION
 
@@ -32,6 +32,9 @@ class AnthropicCountTokensConfig:
         self,
         model: str,
         messages: List[Dict[str, Any]],
+        system: Optional[Union[str, List[Dict[str, Any]]]] = None,
+        tools: Optional[List[Dict[str, Any]]] = None,
+        tool_choice: Optional[Union[str, Dict[str, Any]]] = None,
     ) -> Dict[str, Any]:
         """
         Transform request to Anthropic CountTokens format.
@@ -39,19 +42,40 @@ class AnthropicCountTokensConfig:
         Input:
         {
             "model": "claude-3-5-sonnet-20241022",
-            "messages": [{"role": "user", "content": "Hello!"}]
+            "messages": [{"role": "user", "content": "Hello!"}],
+            "system": "You are a helpful assistant.",
+            "tools": [{"name": "get_weather", ...}],
+            "tool_choice": "auto"
         }
 
         Output (Anthropic CountTokens format):
         {
             "model": "claude-3-5-sonnet-20241022",
-            "messages": [{"role": "user", "content": "Hello!"}]
+            "messages": [{"role": "user", "content": "Hello!"}],
+            "system": "You are a helpful assistant.",
+            "tools": [{"name": "get_weather", ...}],
+            "tool_choice": {"type": "auto"}
         }
         """
-        return {
+        request_body: Dict[str, Any] = {
             "model": model,
             "messages": messages,
         }
+
+        if system is not None:
+            request_body["system"] = system
+
+        if tools is not None:
+            request_body["tools"] = tools
+
+        if tool_choice is not None:
+            # Anthropic API requires tool_choice as {"type": "..."} dict
+            if isinstance(tool_choice, str):
+                request_body["tool_choice"] = {"type": tool_choice}
+            else:
+                request_body["tool_choice"] = tool_choice
+
+        return request_body
 
     def get_required_headers(self, api_key: str) -> Dict[str, str]:
         """

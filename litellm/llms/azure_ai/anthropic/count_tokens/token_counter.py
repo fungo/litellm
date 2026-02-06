@@ -3,7 +3,7 @@ Azure AI Anthropic Token Counter implementation using the CountTokens API.
 """
 
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from litellm._logging import verbose_logger
 from litellm.llms.azure_ai.anthropic.count_tokens.handler import (
@@ -32,6 +32,9 @@ class AzureAIAnthropicTokenCounter(BaseTokenCounter):
         contents: Optional[List[Dict[str, Any]]],
         deployment: Optional[Dict[str, Any]] = None,
         request_model: str = "",
+        system: Optional[Union[str, List[Dict[str, Any]]]] = None,
+        tools: Optional[List[Dict[str, Any]]] = None,
+        tool_choice: Optional[Union[str, Dict[str, Any]]] = None,
     ) -> Optional[TokenCountResponse]:
         """
         Count tokens using Azure AI Anthropic's CountTokens API.
@@ -42,6 +45,9 @@ class AzureAIAnthropicTokenCounter(BaseTokenCounter):
             contents: Alternative content format (not used for Anthropic)
             deployment: Deployment configuration containing litellm_params
             request_model: The original request model name
+            system: Optional system prompt (string or list of message objects)
+            tools: Optional tool definitions for function calling
+            tool_choice: Optional tool choice strategy
 
         Returns:
             TokenCountResponse with token count, or None if counting fails
@@ -79,6 +85,9 @@ class AzureAIAnthropicTokenCounter(BaseTokenCounter):
                 api_key=api_key,
                 api_base=api_base,
                 litellm_params=litellm_params,
+                system=system,
+                tools=tools,
+                tool_choice=tool_choice,
             )
 
             if result is not None:

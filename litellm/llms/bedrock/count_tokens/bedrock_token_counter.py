@@ -2,7 +2,7 @@
 Bedrock Token Counter implementation using the CountTokens API.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from litellm._logging import verbose_logger
 from litellm.llms.base_llm.base_utils import BaseTokenCounter
@@ -30,6 +30,9 @@ class BedrockTokenCounter(BaseTokenCounter):
         contents: Optional[List[Dict[str, Any]]],
         deployment: Optional[Dict[str, Any]] = None,
         request_model: str = "",
+        system: Optional[Union[str, List[Dict[str, Any]]]] = None,
+        tools: Optional[List[Dict[str, Any]]] = None,
+        tool_choice: Optional[Union[str, Dict[str, Any]]] = None,
     ) -> Optional[TokenCountResponse]:
         """
         Count tokens using AWS Bedrock's CountTokens API.
@@ -43,6 +46,9 @@ class BedrockTokenCounter(BaseTokenCounter):
             contents: Alternative content format (not used for Bedrock)
             deployment: Deployment configuration containing litellm_params
             request_model: The original request model name
+            system: Optional system prompt (not used for Bedrock)
+            tools: Optional tool definitions (not used for Bedrock)
+            tool_choice: Optional tool choice strategy (not used for Bedrock)
 
         Returns:
             TokenCountResponse with token count, or None if counting fails
